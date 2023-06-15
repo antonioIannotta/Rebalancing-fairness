@@ -1,1 +1,1 @@
-# SVM-fair
+# Decision Tree Fair
