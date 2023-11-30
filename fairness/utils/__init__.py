@@ -96,18 +96,43 @@ def return_combinations_frequency(dataset: pd.DataFrame, combination_attributes:
 
 
 def return_combination_frequency_target(combination_frequency_list: list) -> Union[int, float]:
+    """
+    This method returns the combination frequency that becomes the target. This mean that the selected frequency
+    cardinality must be reached by all the other combinations.
+    :param combination_frequency_list: the combination list
+    :return: the cardinality chosen as target
+    """
     return max(combination_frequency_list)
 
 
 def is_attribute_continuous(dataset: pd.DataFrame, attribute: str) -> bool:
+    """
+    This method checks if the specified attribute is either continuous or not
+    :param dataset: the original dataset on which compute the check
+    :param attribute: the attribute for which compute the check
+    :return: the results of the check
+    """
     return all(isinstance(attribute, float) for attribute in dataset[attribute])
 
 
 def is_variable_discrete(dataset: pd.DataFrame, attribute: str) -> bool:
+    """
+    This method checks if the specified attribute is either discrete or not
+    :param dataset: the original dataset on which compute the check
+    :param attribute: the attribute for which compute the check
+    :return: the results of the check
+    """
     return all(isinstance(attribute, int) for attribute in dataset[attribute])
 
 
-def return_attribute_frequency(attribute: str, dataset: pd.DataFrame) -> Tuple[Union[int, float], Union[int, float]]:
+def return_attribute_least_and_most_frequent_value(attribute: str, dataset: pd.DataFrame) \
+        -> Tuple[Union[int, float], Union[int, float]]:
+    """
+    This method returns the least and the most frequent value for the specified attribute
+    :param attribute: the attribute of which return the least and the most frequent value
+    :param dataset: the dataset on which retrieve the values
+    :return: the least and the most frequent value
+    """
     unique_values, counts = np.unique(dataset[attribute], return_counts=True)
 
     if len(unique_values) == 0:

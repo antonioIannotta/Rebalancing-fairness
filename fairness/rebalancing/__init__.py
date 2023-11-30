@@ -3,6 +3,13 @@ from fairness.utils import *
 
 
 def augment_data(dataset: pd.DataFrame, protected_attributes: list[str], output_column: str) -> pd.DataFrame:
+    """
+    This method augments the data adding rows to the original dataset.
+    :param dataset: the dataset to which add the rows
+    :param protected_attributes: the protected attributes
+    :param output_column: the output column
+    :return: the augmented dataset
+    """
     combination_list: list[Union[list, float]] = (
         return_combination_list_for_combination_attributes(dataset=dataset, protected_attributes=protected_attributes,
                                                            output_column=output_column))
@@ -11,7 +18,8 @@ def augment_data(dataset: pd.DataFrame, protected_attributes: list[str], output_
     combination_frequency: list[int] = return_combinations_frequency(dataset=dataset,
                                                                      combination_attributes=combination_attributes,
                                                                      combination_list=combination_list)
-    combination_frequency_target: int = return_combination_frequency_target(combination_frequency_list=combination_frequency)
+    combination_frequency_target: int =\
+        return_combination_frequency_target(combination_frequency_list=combination_frequency)
 
     for index, combination in enumerate(combination_list):
         temp_dataset: pd.DataFrame = dataset.query(return_query_for_dataframe(combination, combination_attributes))
@@ -24,7 +32,7 @@ def augment_data(dataset: pd.DataFrame, protected_attributes: list[str], output_
         for _ in range(combination_frequency_target - combination_frequency[index]):
             new_row: dict = {attribute: value for (attribute, value) in zip(combination_attributes, combination)}
             for attribute in dataset.columns.difference(combination_attributes):
-                first_value, second_value = return_attribute_frequency(attribute, temp_dataset)
+                first_value, second_value = return_attribute_least_and_most_frequent_value(attribute, temp_dataset)
                 min_value, max_value = min(first_value, second_value), max(first_value, second_value)
                 if is_variable_discrete(temp_dataset, attribute):
                     new_row[attribute] = random.randint(min_value, max_value)
