@@ -29,27 +29,52 @@ def is_attribute_binary(attribute: pd.Series) -> bool:
     """
     This method checks if the series passed as argument is a binary one
     :param attribute: the attribute to assess if it's either binary or not
-    :return:
+    :return: the results of the check
     """
     return len(attribute.unique()) == 2
 
 
 def return_threshold_for_series(attribute: pd.Series) -> float:
+    """
+    This method returns the threshold for the attribute specified as argument used into the binary conversion of the attribute
+    :param attribute: the series on which compute the threshold
+    :return: return the computed threshold
+    """
     return (attribute.max() + attribute.min()) / 2
 
 
 def return_combination_list(unique_values_for_combination_attributes: list[Union[int, float]]) \
         -> list[list[Union[int, float]]]:
+    """
+    This method returns the combination list for the list of lists specified as argument. More specifically each list
+    belonging to the return list has in its i-th position an element of the i-th list in the list of lists
+    :param unique_values_for_combination_attributes: the list of lists from which to build the combination list
+    :return: the combination list
+    """
     return list(itertools.product(*unique_values_for_combination_attributes))
 
 
 def return_query_for_dataframe(combination: list[Union[int, float]], combination_attributes: list[str]) -> str:
+    """
+    This method returns the query string to make a search on the original dataset
+    :param combination: the combination representing the values the combination attributes must have in the sub-dataset
+    :param combination_attributes: the combination attributes
+    :return: a string to be passed to the .query method of DataFrame object
+    """
     conditions = [f"{attribute} == {value}" for value, attribute in zip(combination, combination_attributes)]
     return " and ".join(conditions)
 
 
 def return_combination_list_for_combination_attributes(dataset: pd.DataFrame, protected_attributes: list[str],
                                                        output_column: str) -> list[list[Union[int, float]]]:
+    """
+    This method returns the combination list for the combination attributes intended as combination of
+    protected attributes and output column
+    :param dataset: the dataset on which start to retrieve the unique values
+    :param protected_attributes: the protected attribute
+    :param output_column: the output column
+    :return: the combination list for the combination attribute list
+    """
     combination_attributes: list[str] = protected_attributes + [output_column]
     unique_values_for_combination_attributes: list = [dataset[x].unique() for x in combination_attributes]
 
@@ -59,6 +84,13 @@ def return_combination_list_for_combination_attributes(dataset: pd.DataFrame, pr
 
 def return_combinations_frequency(dataset: pd.DataFrame, combination_attributes: list[str],
                                   combination_list: list[list[Union[int, float]]]) -> list[int | float]:
+    """
+    This method returns the combination frequency on the dataset for each element in combination list
+    :param dataset: the dataset on which compute the frequencies
+    :param combination_attributes: the combination attributes to be marched with the element of the combination list
+    :param combination_list: the combination list
+    :return: the frequency into the dataset for each element of the combination list
+    """
     return [len(dataset.query(return_query_for_dataframe(combination, combination_attributes))) for combination in
             combination_list]
 
