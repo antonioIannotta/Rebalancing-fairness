@@ -38,7 +38,7 @@ file.write('Accuracy: ' + str(accuracy_score) + "\n")
 file.close()
 
 dem_parity_difference = demographic_parity_difference(y_pred=predicted, y_true=target_test,
-                                                      sensitive_features=pd.DataFrame(data_test, columns=['sex']))
+                                                      sensitive_features=pd.DataFrame(data_test, columns=['sex', 'race']))
 
 file = open('./results', 'a')
 file.write('Dem parity difference: ' + str(dem_parity_difference) + "\n")
