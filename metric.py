@@ -102,7 +102,7 @@ def demographic_parity(
                 * number_of_sample
             )
         parity /= len(p)
-    # fairness.logger.info(f"Demographic parity: {parity:.4f}")
+    #fairness.logger.info(f"Demographic parity: {parity:.4f}")
     return parity < epsilon if not numeric else parity
 
 
@@ -171,7 +171,7 @@ def disparate_impact(
             np.min(np.vstack((first_impact, second_impact)), axis=0) * number_of_samples
         )
         impact = np.sum(pair_wise_weighted_min) / len(p)
-    # fairness.logger.info(f"Disparate impact: {impact:.4f}")
+    #fairness.logger.info(f"Disparate impact: {impact:.4f}")
     return impact > threshold if not numeric else impact
 
 
@@ -274,5 +274,5 @@ def equalized_odds(
         )
         eo = np.nan_to_num(eo)
         eo = np.sum(eo * number_of_samples) / np.sum(number_of_samples)
-    # fairness.logger.info(f"Equalized odds: {eo:.4f}")
+    #fairness.logger.info(f"Equalized odds: {eo:.4f}")
     return eo < epsilon if not numeric else eo
