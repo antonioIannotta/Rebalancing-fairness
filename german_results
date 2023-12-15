@@ -1,0 +1,9 @@
+German augmented number of items: 
+3792
+Accuracy: 0.7696969696969697
+Demographic parity sex: 0.060716253443526165
+Demographic parity race: 0.0003856749311294778
+Disparate impact sex: 0.618716222741658
+Disparate impact race: 0.9672897196261683
+Equalized odds sex: 0.04457439550870918
+Equalized odds race: 0.003103729816142772
