@@ -1,13 +1,12 @@
 import os
 
 import numpy as np
+from fairlearn.preprocessing import CorrelationRemover
 import pandas as pd
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import SGDClassifier
 from sklearn.model_selection import GridSearchCV
 from xgboost import XGBClassifier
-from fairlearn.reductions import ExponentiatedGradient
-from fairlearn.reductions import DemographicParity
 
 from sklearn.metrics import accuracy_score
 from metric import demographic_parity, disparate_impact
@@ -19,6 +18,12 @@ X = training_data.drop(columns=['income'], inplace=False)
 X_test = test_data.drop(columns=['income'], inplace=False)
 y = training_data['income']
 y_test = test_data['income']
+
+protected_attributes = ['race', 'sex']
+
+for attr in protected_attributes:
+    X[attr] = X[attr].median()
+    print(X[attr])
 
 xgb_classifier = XGBClassifier()
 sgd_classifier = SGDClassifier()
@@ -50,17 +55,14 @@ rf_params = {
 gs_xgb = GridSearchCV(xgb_classifier, param_grid=xgb_params, cv=10, n_jobs=os.cpu_count())
 gs_xgb.fit(X, y)
 
-eg_xgb = ExponentiatedGradient(estimator=gs_xgb.best_estimator_, constraints=DemographicParity())
-eg_xgb.fit(X, y)
-
-xgb_pred = eg_xgb.predict(X_test)
+xgb_pred = gs_xgb.predict(X_test)
 xgb_accuracy = accuracy_score(y_test, xgb_pred)
 xgb_disparate_impact_race = disparate_impact(X_test['race'].values, xgb_pred)
 xgb_disparate_impact_sex = disparate_impact(X_test['sex'].values, xgb_pred)
 xgb_demographic_parity_race = demographic_parity(X_test['race'].values, xgb_pred)
 xgb_demographic_parity_sex = demographic_parity(X_test['sex'].values, xgb_pred)
 
-file = open('./results/exponential_gradient_results', 'a')
+file = open('./results/fairness_through_unawareness_results', 'a')
 file.write('Model: XGB Classifier \n')
 file.write('Accuracy: ' + str(xgb_accuracy) + "\n")
 file.write('Disparate impact for race: ' + str(xgb_disparate_impact_race) + "\n")
@@ -71,17 +73,14 @@ file.write('Demographic parity for sex: ' + str(xgb_demographic_parity_sex) + "\
 gs_sgd = GridSearchCV(sgd_classifier, param_grid=sgd_params, cv=10, n_jobs=os.cpu_count())
 gs_sgd.fit(X, y)
 
-eg_sgd = ExponentiatedGradient(estimator=gs_sgd.best_estimator_, constraints=DemographicParity())
-eg_sgd.fit(X, y)
-
-sgd_pred = eg_sgd.predict(X_test)
+sgd_pred = gs_sgd.predict(X_test)
 sgd_accuracy = accuracy_score(y_test, sgd_pred)
 sgd_disparate_impact_race = disparate_impact(X_test['race'].values, sgd_pred)
 sgd_disparate_impact_sex = disparate_impact(X_test['sex'].values, sgd_pred)
 sgd_demographic_parity_race = demographic_parity(X_test['race'].values, sgd_pred)
 sgd_demographic_parity_sex = demographic_parity(X_test['sex'].values, sgd_pred)
 
-file = open('./results/exponential_gradient_results', 'a')
+file = open('./results/fairness_through_unawareness_results', 'a')
 file.write('Model: SGD Classifier \n')
 file.write('Accuracy: ' + str(sgd_accuracy) + "\n")
 file.write('Disparate impact for race: ' + str(sgd_disparate_impact_race) + "\n")
@@ -92,17 +91,14 @@ file.write('Demographic parity for sex: ' + str(sgd_demographic_parity_sex) + "\
 gs_rf = GridSearchCV(rf_classifier, param_grid=rf_params, cv=10, n_jobs=os.cpu_count())
 gs_rf.fit(X, y)
 
-eg_rf = ExponentiatedGradient(estimator=gs_rf.best_estimator_, constraints=DemographicParity())
-eg_rf.fit(X, y)
-
-rf_pred = eg_rf.predict(X_test)
+rf_pred = gs_rf.predict(X_test)
 rf_accuracy = accuracy_score(y_test, rf_pred)
 rf_disparate_impact_race = disparate_impact(X_test['race'].values, rf_pred)
 rf_disparate_impact_sex = disparate_impact(X_test['sex'].values, rf_pred)
 rf_demographic_parity_race = demographic_parity(X_test['race'].values, rf_pred)
 rf_demographic_parity_sex = demographic_parity(X_test['sex'].values, rf_pred)
 
-file = open('./results/exponential_gradient_results', 'a')
+file = open('./results/fairness_through_unawareness_results', 'a')
 file.write('Model: RF Classifier \n')
 file.write('Accuracy: ' + str(rf_accuracy) + "\n")
 file.write('Disparate impact for race: ' + str(rf_disparate_impact_race) + "\n")

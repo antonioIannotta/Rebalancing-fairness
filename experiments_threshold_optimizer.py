@@ -1,12 +1,12 @@
 import os
 
 import numpy as np
-from fairlearn.preprocessing import CorrelationRemover
 import pandas as pd
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import SGDClassifier
 from sklearn.model_selection import GridSearchCV
 from xgboost import XGBClassifier
+from fairlearn.postprocessing import ThresholdOptimizer
 
 from sklearn.metrics import accuracy_score
 from metric import demographic_parity, disparate_impact
@@ -15,11 +15,6 @@ training_data = pd.read_csv('./dataset/numerical_adult_train.csv', sep=',')
 test_data = pd.read_csv('./dataset/numerical_adult_test.csv', sep=',')
 
 X = training_data.drop(columns=['income'], inplace=False)
-
-cr = CorrelationRemover(sensitive_feature_ids=['race', 'sex'], alpha=0.5)
-cr.fit(X)
-X_transform = cr.transform(X)
-
 X_test = test_data.drop(columns=['income'], inplace=False)
 y = training_data['income']
 y_test = test_data['income']
@@ -52,16 +47,19 @@ rf_params = {
 }
 
 gs_xgb = GridSearchCV(xgb_classifier, param_grid=xgb_params, cv=10, n_jobs=os.cpu_count())
-gs_xgb.fit(X_transform, y)
+gs_xgb.fit(X, y)
 
-xgb_pred = gs_xgb.predict(X_test)
+to_xgb = ThresholdOptimizer(estimator=gs_xgb.best_estimator_, constraints="demographic_parity")
+to_xgb.fit(X, y, sensitive_features=pd.DataFrame(X, columns=['race', 'sex']))
+
+xgb_pred = to_xgb.predict(X_test, sensitive_features=pd.DataFrame(X, columns=['race', 'sex']))
 xgb_accuracy = accuracy_score(y_test, xgb_pred)
 xgb_disparate_impact_race = disparate_impact(X_test['race'].values, xgb_pred)
 xgb_disparate_impact_sex = disparate_impact(X_test['sex'].values, xgb_pred)
 xgb_demographic_parity_race = demographic_parity(X_test['race'].values, xgb_pred)
 xgb_demographic_parity_sex = demographic_parity(X_test['sex'].values, xgb_pred)
 
-file = open('./results/data_augmentation_experiment_results', 'a')
+file = open('./results/to_results', 'a')
 file.write('Model: XGB Classifier \n')
 file.write('Accuracy: ' + str(xgb_accuracy) + "\n")
 file.write('Disparate impact for race: ' + str(xgb_disparate_impact_race) + "\n")
@@ -70,16 +68,19 @@ file.write('Demographic parity for race: ' + str(xgb_demographic_parity_race) + 
 file.write('Demographic parity for sex: ' + str(xgb_demographic_parity_sex) + "\n")
 
 gs_sgd = GridSearchCV(sgd_classifier, param_grid=sgd_params, cv=10, n_jobs=os.cpu_count())
-gs_sgd.fit(X_transform, y)
+gs_sgd.fit(X, y)
 
-sgd_pred = gs_sgd.predict(X_test)
+to_sgd = ThresholdOptimizer(estimator=gs_sgd.best_estimator_, constraints="equalized_odds")
+to_sgd.fit(X, y, sensitive_features=pd.DataFrame(X, columns=['race', 'sex']))
+
+sgd_pred = to_sgd.predict(X_test, sensitive_features=pd.DataFrame(X, columns=['race', 'sex']))
 sgd_accuracy = accuracy_score(y_test, sgd_pred)
 sgd_disparate_impact_race = disparate_impact(X_test['race'].values, sgd_pred)
 sgd_disparate_impact_sex = disparate_impact(X_test['sex'].values, sgd_pred)
 sgd_demographic_parity_race = demographic_parity(X_test['race'].values, sgd_pred)
 sgd_demographic_parity_sex = demographic_parity(X_test['sex'].values, sgd_pred)
 
-file = open('./results/data_augmentation_experiment_results', 'a')
+file = open('./results/to_results', 'a')
 file.write('Model: SGD Classifier \n')
 file.write('Accuracy: ' + str(sgd_accuracy) + "\n")
 file.write('Disparate impact for race: ' + str(sgd_disparate_impact_race) + "\n")
@@ -88,16 +89,19 @@ file.write('Demographic parity for race: ' + str(sgd_demographic_parity_race) + 
 file.write('Demographic parity for sex: ' + str(sgd_demographic_parity_sex) + "\n")
 
 gs_rf = GridSearchCV(rf_classifier, param_grid=rf_params, cv=10, n_jobs=os.cpu_count())
-gs_rf.fit(X_transform, y)
+gs_rf.fit(X, y)
 
-rf_pred = gs_rf.predict(X_test)
+to_rf = ThresholdOptimizer(estimator=gs_rf.best_estimator_, constraints="demographic_parity")
+to_rf.fit(X, y, sensitive_features=pd.DataFrame(X, columns=['race', 'sex']))
+
+rf_pred = to_rf.predict(X_test, sensitive_features=pd.DataFrame(X, columns=['race', 'sex']))
 rf_accuracy = accuracy_score(y_test, rf_pred)
 rf_disparate_impact_race = disparate_impact(X_test['race'].values, rf_pred)
 rf_disparate_impact_sex = disparate_impact(X_test['sex'].values, rf_pred)
 rf_demographic_parity_race = demographic_parity(X_test['race'].values, rf_pred)
 rf_demographic_parity_sex = demographic_parity(X_test['sex'].values, rf_pred)
 
-file = open('./results/data_augmentation_experiment_results', 'a')
+file = open('./results/to_results', 'a')
 file.write('Model: RF Classifier \n')
 file.write('Accuracy: ' + str(rf_accuracy) + "\n")
 file.write('Disparate impact for race: ' + str(rf_disparate_impact_race) + "\n")
