@@ -1,0 +1,18 @@
+Model: XGB Classifier 
+Accuracy: 0.823536637798661
+Disparate impact for race: 0.5703394773621808
+Disparate impact for sex: 0.38098674665283444
+Demographic parity for race: 0.008325491376628016
+Demographic parity for sex: 0.02423031921629469
+Model: SGD Classifier 
+Accuracy: 0.23794607210859284
+Disparate impact for race: 0.9994593935458181
+Disparate impact for sex: 0.9989817274810855
+Demographic parity for race: 0.00016351847760499725
+Demographic parity for sex: 0.000451690368301051
+Model: RF Classifier 
+Accuracy: 0.8162275044530434
+Disparate impact for race: 0.6308331560386057
+Disparate impact for sex: 0.4075382228154128
+Demographic parity for race: 0.006373764948171742
+Demographic parity for sex: 0.019774146440733657
