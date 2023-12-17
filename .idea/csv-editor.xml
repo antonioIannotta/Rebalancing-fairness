@@ -10,6 +10,20 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="/dataset/numerical_adult_test.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/dataset/numerical_adult_train.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="/german_augmented_dataset.csv">
           <value>
             <Attribute>

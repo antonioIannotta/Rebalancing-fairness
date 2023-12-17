@@ -1,4 +1,2 @@
-Adult training number of items: 
-32561
 Adult augmented number of items: 
 261700
