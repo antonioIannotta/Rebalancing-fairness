@@ -1,4 +1,4 @@
-Model: XGB Classifier 
+FtUModel: XGB Classifier
 Accuracy: 0.823536637798661
 Disparate impact for race: 0.5703394773621808
 Disparate impact for sex: 0.38098674665283444
