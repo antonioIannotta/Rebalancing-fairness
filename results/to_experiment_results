@@ -1,0 +1,24 @@
+Model: XGB Classifier 
+Accuracy: 0.5503852080123267
+Disparate impact for a1: 0.0
+Disparate impact for capital_island: 0.0
+Disparate impact for public_private: 0.0
+Disparate impact for household_income_q: 0.0
+Disparate impact for escs: 0.0
+Demographic parity for a1: 0.0
+Demographic parity for capital_island: 0.0
+Demographic parity for public_private: 0.0
+Demographic parity for household_income_q: 0.0
+Demographic parity for escs: 0.0
+Model: RF Classifier 
+Accuracy: 0.5503852080123267
+Disparate impact for a1: 0.0
+Disparate impact for capital_island: 0.0
+Disparate impact for public_private: 0.0
+Disparate impact for household_income_q: 0.0
+Disparate impact for escs: 0.0
+Demographic parity for a1: 0.0
+Demographic parity for capital_island: 0.0
+Demographic parity for public_private: 0.0
+Demographic parity for household_income_q: 0.0
+Demographic parity for escs: 0.0
